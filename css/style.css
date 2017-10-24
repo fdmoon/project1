@@ -13,11 +13,11 @@ body:after {
 	top: 0;
 	left: 0;
 	background-image: url(../images/choicr_background.jpg);
-	background-size: 100% 100%;
+	background-size: cover;
 	background-repeat: no-repeat;
 	width: 100%;
 	min-height: 100%;
-	opacity : 0.3;
+	opacity : 0.5;
 	z-index: -1;
 }
 
@@ -33,7 +33,7 @@ div {
 	color: #fff;
 	padding: 15px 15px;
 	margin-bottom: 20px;
-	background-image: url(../images/choicr_jumbotron.jpg);
+	background-image: url(../images/atx.jpg);
 	background-size: 100% 100%;
 	background-repeat: no-repeat;	
 }
@@ -41,6 +41,14 @@ div {
 .col-md-6 {
 	padding-left: 0;
 	padding-right: 0;
+}
+
+#choosr-logo {
+	float: right;
+	width: 180px;
+	height: auto;
+	margin-top: 20px;
+	margin-left: 20px;
 }
 
 #amazon-heading {
