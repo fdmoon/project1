@@ -78,9 +78,17 @@ div {
 }
 
 @media screen and (max-width: 992px) {
-/*@media screen and (max-width: 768px) {*/
 	#googlemap {
 		margin-top: 20px;
+	}
+}
+
+@media screen and (max-width: 768px) {
+	#choosr-logo {
+		width: 100px;
+		height: auto;
+		margin-top: 20px;
+		margin-left: 20px;
 	}
 }
 
