@@ -163,7 +163,7 @@ $(document).ready(function() {
             runQuery(key);
 
             // goto #amazon-section
-            window.location = "#amazon-section";
+            smoothScrollingTo("#amazon-section");
         }
     });
 
