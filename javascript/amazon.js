@@ -16,6 +16,8 @@ var PublicKey = "AKIAJT7OL5NR6LS2A66A";
 var AssociateTag = "fdmoon-20";
 
 var isInitReading = true;
+var searchKeyword = "";
+var isNewSearch = false;
 
 $(document).ready(function() {
 	var database = firebase.database();
@@ -89,9 +91,21 @@ $(document).ready(function() {
 
 		// Retrieve data
 		var key = $("#data-keyword").val().trim();
-		var cat = $("#data-category").val().trim();
+		// var cat = $("#data-category").val().trim();
 
-		var queryURL = getAmazonItemSearch(key, cat);
+		if(key === searchKeyword) {
+			isNewSearch = false;
+
+	        // goto #amazon-section
+	        window.location = "#amazon-section";
+
+	        return;
+		}
+		else {
+			isNewSearch = true;
+		}
+
+		var queryURL = getAmazonItemSearch(key, "All");
 		console.log(queryURL);
 
 		$.ajax({
@@ -105,6 +119,9 @@ $(document).ready(function() {
 		// clear all search items and images in Firebase
 		database.ref("/AmazonSearchItems").set({});
 		database.ref("/AmazonSearchItemImages").set({});
+
+		var itemCount = 0;
+		var maxAmazonItems = 8;
 
 		database.ref("/AmazonSearchItems/Keyword").set(this.custom);
 
@@ -142,6 +159,11 @@ $(document).ready(function() {
 				group: productGrp,
 				url: pageUrl
 			});
+
+			itemCount++;
+			if(itemCount >= maxAmazonItems) {
+				break;
+			}
 		}
 	}).fail(function(jqXHR, textStatus) {
 			$("#display-amazon").empty();
@@ -159,19 +181,22 @@ $(document).ready(function() {
 		// Clear table
 		$("#display-amazon").empty();
 
+		var itemNo = 1;
+
 		// Add data to table
 		snap.forEach(function(childsnap) {
 			if(childsnap.key !== "Keyword") {
 				var info = childsnap.val();
 
-				var divMain = $("<div class='well clearfix'>");
-				divMain.append("<h4><strong>" + info.title + "</strong><h4>");
+				var divMain = $("<div class='well item-info amazon-item clearfix'>");
 
 	            var img = $("<img>");
 	            img.addClass("item-img");
 	            img.attr("id", info.asin);
 	            img.attr("src", "");
 	            divMain.append(img);
+
+				divMain.append("<h4><strong>" + info.title + "</strong><h4>");
 
 				divMain.append("<p>ASIN: "+ info.asin +"</p>");
 				divMain.append("<p>Product Group: "+ info.group +"</p>");
@@ -184,7 +209,8 @@ $(document).ready(function() {
 				divMain.append(divSub);
 				// divMain.append("<iframe src='" + info.pageUrl + "'></iframe>");
 
-				$("#display-amazon").append(divMain);
+				$("#display-amazon" + itemNo).append(divMain);
+				itemNo++;
 
 				if(!isInitReading) {
 					var subQuery = getAmazonItemLookup(info.asin);
@@ -219,7 +245,8 @@ $(document).ready(function() {
 				}
 			}
 			else {
-				$("#data-keyword").val(childsnap.val());
+				searchKeyword = childsnap.val();
+				$("#data-keyword").val(searchKeyword);
 			}
 		});
 

@@ -109,6 +109,9 @@ $(document).ready(function() {
             // clear data in Firebase
             database.ref("/GoodzerSearchItems").set({});
 
+            var itemCount = 0;
+            var maxGoodzerItems = 6;
+
             for(var i=0; i<resp.stores.length; i++) {
                 database.ref("/GoodzerSearchItems").push({
                     id: resp.stores[i].products[0].id,
@@ -117,6 +120,11 @@ $(document).ready(function() {
                     website: resp.stores[i].website,
                     location: resp.stores[i].locations[0]
                 });
+
+                itemCount++;
+                if(itemCount >= maxGoodzerItems) {
+                    break;
+                }
             }
         });
 
@@ -145,11 +153,16 @@ $(document).ready(function() {
         // prevents page from reloading
         event.preventDefault();
 
-        // Grabbing text the user typed into the search input
-        key = $("#data-keyword").val().trim();
+        // isNewSearch is defined in amazon.js
+        if(isNewSearch) {
+            // Grabbing text the user typed into the search input
+            key = $("#data-keyword").val().trim();
 
-        runQuery(key);
+            runQuery(key);
 
+            // goto #amazon-section
+            window.location = "#amazon-section";
+        }
     });
 
     // When data in GoodzerSearchItems is changed
@@ -159,23 +172,26 @@ $(document).ready(function() {
 
         resetMarker();
 
+        var itemNo = 1;
+
         // Add data to table
         snap.forEach(function(childsnap) {
             var info = childsnap.val();
 
-            var divMain = $("<div class='well clearfix'>");
-            divMain.append("<h4><strong>" + info.product.title + "</strong><h4>");
+            var divMain = $("<div class='well item-info goodzer-item clearfix'>");
 
             var img = $("<img>");
             img.addClass("item-img");
             img.attr("src", info.product.image);
             divMain.append(img);
 
+            divMain.append("<h4><strong>" + info.product.title + "</strong><h4>");
+
             divMain.append("<p>$ " + info.product.price + " at " + info.store +"</p>");
 
             var addr = info.location.address + ", " + info.location.city + ", " + info.location.state + " " + info.location.zipcode;
             divMain.append("<p>" + addr + "</p>");
-            divMain.append("<p>Tel: " + info.location.phone + "</p>");
+            // divMain.append("<p>Tel: " + info.location.phone + "</p>");
 
             var divSub = $("<div>");
             var a = $("<a target='_blank'>");
@@ -184,7 +200,8 @@ $(document).ready(function() {
             divSub.append(a);
             divMain.append(divSub);
 
-            $("#display-goodzer").append(divMain);
+            $("#display-goodzer" + itemNo).append(divMain);
+            itemNo++;
 
             var storeInfo = info.store + "\n" + addr + "\n" + info.location.phone;
             setMarker(info.location.lat, info.location.lng, storeInfo, info.website);

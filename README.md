@@ -1,4 +1,4 @@
-# Choicr
+# Choosr
 
 ### Overview
 
