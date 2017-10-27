@@ -7,6 +7,8 @@ var markers = [];   // Create a marker array to hold your markers
 
 var myLatLng = {lat: 30.2672, lng: -97.7431};
 
+var maxGoodzerItems = 6;
+
 function initMap() {
     map = new google.maps.Map(document.getElementById('googlemap'), {
         center: myLatLng,
@@ -109,11 +111,11 @@ $(document).ready(function() {
             // clear data in Firebase
             database.ref("/GoodzerSearchItems").set({});
 
-            var itemCount = 0;
-            var maxGoodzerItems = 6;
+            var itemNo = 1;
 
             for(var i=0; i<resp.stores.length; i++) {
                 database.ref("/GoodzerSearchItems").push({
+                    tagid: "#display-goodzer" + itemNo,
                     id: resp.stores[i].products[0].id,
                     product: resp.stores[i].products[0],
                     store: resp.stores[i].name,
@@ -121,8 +123,8 @@ $(document).ready(function() {
                     location: resp.stores[i].locations[0]
                 });
 
-                itemCount++;
-                if(itemCount >= maxGoodzerItems) {
+                itemNo++;
+                if(itemNo > maxGoodzerItems) {
                     break;
                 }
             }
@@ -167,12 +169,7 @@ $(document).ready(function() {
 
     // When data in GoodzerSearchItems is changed
     database.ref("/GoodzerSearchItems").on("value", function(snap) {
-        // Clear table
-        $("#display-goodzer").empty();
-
         resetMarker();
-
-        var itemNo = 1;
 
         // Add data to table
         snap.forEach(function(childsnap) {
@@ -185,7 +182,7 @@ $(document).ready(function() {
             img.attr("src", info.product.image);
             divMain.append(img);
 
-            divMain.append("<h4><strong>" + info.product.title + "</strong><h4>");
+            divMain.append("<h5><strong>" + info.product.title + "</strong><h5>");
 
             divMain.append("<p>$ " + info.product.price + " at " + info.store +"</p>");
 
@@ -200,8 +197,8 @@ $(document).ready(function() {
             divSub.append(a);
             divMain.append(divSub);
 
-            $("#display-goodzer" + itemNo).append(divMain);
-            itemNo++;
+            $(info.tagid).empty();
+            $(info.tagid).append(divMain);
 
             var storeInfo = info.store + "\n" + addr + "\n" + info.location.phone;
             setMarker(info.location.lat, info.location.lng, storeInfo, info.website);

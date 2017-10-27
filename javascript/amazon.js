@@ -19,6 +19,8 @@ var isInitReading = true;
 var searchKeyword = "";
 var isNewSearch = false;
 
+var maxAmazonItems = 8;
+
 $(document).ready(function() {
 	var database = firebase.database();
 
@@ -114,75 +116,72 @@ $(document).ready(function() {
 			custom: key
 			// dataType: 'jsonp'
 		}).done(function(resp) {
-		console.log(resp);
+			console.log(resp);
 
-		// clear all search items and images in Firebase
-		database.ref("/AmazonSearchItems").set({});
-		database.ref("/AmazonSearchItemImages").set({});
+			// clear all search items and images in Firebase
+			database.ref("/AmazonSearchItems").set({});
+			database.ref("/AmazonSearchItemImages").set({});
 
-		var itemCount = 0;
-		var maxAmazonItems = 8;
+			var itemNo = 1;
 
-		database.ref("/AmazonSearchItems/Keyword").set(this.custom);
+			database.ref("/AmazonSearchItems/Keyword").set(this.custom);
 
-		//resp.documentElement.childNodes[1].childNodes[4 ~]
-		//.....ItemSearchResponse
-		//.....................Items
-		//...................................Item
-		for(var i=4; i<resp.documentElement.childNodes[1].childNodes.length; i++) {
+			//resp.documentElement.childNodes[1].childNodes[4 ~]
+			//.....ItemSearchResponse
+			//.....................Items
+			//...................................Item
+			for(var i=4; i<resp.documentElement.childNodes[1].childNodes.length; i++) {
 
-			var childData = resp.documentElement.childNodes[1].childNodes[i];
+				var childData = resp.documentElement.childNodes[1].childNodes[i];
 
-			// ASIN
-			var asin = childData.childNodes[0].childNodes[0].nodeValue;
-			// DetailPageURL
-			var pageUrl = childData.childNodes[1].childNodes[0].nodeValue;
+				// ASIN
+				var asin = childData.childNodes[0].childNodes[0].nodeValue;
+				// DetailPageURL
+				var pageUrl = childData.childNodes[1].childNodes[0].nodeValue;
 
-			var childPos;
-			if(pageUrl.indexOf("http") !== -1) {
-				childPos = childData.childNodes[3];
+				var childPos;
+				if(pageUrl.indexOf("http") !== -1) {
+					childPos = childData.childNodes[3];
+				}
+				else {
+					pageUrl = childData.childNodes[2].childNodes[0].nodeValue;
+
+					childPos = childData.childNodes[4];
+				}
+
+				// Product Group
+				var productGrp = childPos.childNodes[childPos.childNodes.length-2].childNodes[0].nodeValue;
+				// Title
+				var title = childPos.childNodes[childPos.childNodes.length-1].childNodes[0].nodeValue;
+
+				database.ref("/AmazonSearchItems").push({
+					tagid: "#display-amazon" + itemNo,
+					asin: asin,
+					title: title,
+					group: productGrp,
+					url: pageUrl
+				});
+
+				itemNo++;
+				if(itemNo > maxAmazonItems) {
+					break;
+				}
 			}
-			else {
-				pageUrl = childData.childNodes[2].childNodes[0].nodeValue;
-
-				childPos = childData.childNodes[4];
+		}).fail(function(jqXHR, textStatus) {
+			for(var i=0; i<maxAmazonItems; i++) {
+				$("#display-amazon" + i).empty();
 			}
 
-			// Product Group
-			var productGrp = childPos.childNodes[childPos.childNodes.length-2].childNodes[0].nodeValue;
-			// Title
-			var title = childPos.childNodes[childPos.childNodes.length-1].childNodes[0].nodeValue;
-
-			database.ref("/AmazonSearchItems").push({
-				asin: asin,
-				title: title,
-				group: productGrp,
-				url: pageUrl
-			});
-
-			itemCount++;
-			if(itemCount >= maxAmazonItems) {
-				break;
-			}
-		}
-	}).fail(function(jqXHR, textStatus) {
-			$("#display-amazon").empty();
-
-			var div = $("<div class='well'>");
+			var div = $("<div class='well item-info amazon-item'>");
 			div.append("<p>"+ jqXHR +"</p>");
 			div.append("<p>"+ textStatus +"</p>");
 			
-			$("#display-amazon").append(div);
+			$("#display-amazon1").append(div);
 		});
 	});
 	
 	// When data in AmazonSearchItems is changed
 	database.ref("/AmazonSearchItems").on("value", function(snap) {
-		// Clear table
-		$("#display-amazon").empty();
-
-		var itemNo = 1;
-
 		// Add data to table
 		snap.forEach(function(childsnap) {
 			if(childsnap.key !== "Keyword") {
@@ -196,7 +195,7 @@ $(document).ready(function() {
 	            img.attr("src", "");
 	            divMain.append(img);
 
-				divMain.append("<h4><strong>" + info.title + "</strong><h4>");
+				divMain.append("<h5><strong>" + info.title + "</strong><h5>");
 
 				divMain.append("<p>ASIN: "+ info.asin +"</p>");
 				divMain.append("<p>Product Group: "+ info.group +"</p>");
@@ -209,8 +208,8 @@ $(document).ready(function() {
 				divMain.append(divSub);
 				// divMain.append("<iframe src='" + info.pageUrl + "'></iframe>");
 
-				$("#display-amazon" + itemNo).append(divMain);
-				itemNo++;
+				$(info.tagid).empty();
+				$(info.tagid).append(divMain);
 
 				if(!isInitReading) {
 					var subQuery = getAmazonItemLookup(info.asin);

@@ -147,7 +147,7 @@ div {
 }
 
 .item-info {
-	font-size: 1em;
+	font-size: 0.9em;
 	line-height: 100%;
 }
 
@@ -156,11 +156,11 @@ div {
 }
 
 .amazon-item {
-	min-height: 260px;
+	min-height: 265px;
 }
 
 .goodzer-item {
-	min-height: 180px;
+	min-height: 185px;
 }
 
 .panel-heading {
