@@ -163,7 +163,11 @@ $(document).ready(function() {
             runQuery(key);
 
             // goto #amazon-section
-            smoothScrollingTo("#amazon-section");
+            $('html, body').animate({
+                scrollTop: $("#amazon-section").offset().top
+            }, 800, function(){
+                window.location.hash = "#amazon-section";
+            });
         }
     });
 
