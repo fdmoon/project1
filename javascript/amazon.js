@@ -168,7 +168,7 @@ $(document).ready(function() {
 				}
 			}
 		}).fail(function(jqXHR, textStatus) {
-			for(var i=0; i<maxAmazonItems; i++) {
+			for(var i=1; i<=maxAmazonItems; i++) {
 				$("#display-amazon" + i).empty();
 			}
 
