@@ -54,7 +54,7 @@ $(document).ready(function() {
 		var signature = sha256(signingKey,PrivateKey);
 		    signature = encodeURIComponent(signature);
 
-		var amazonUrl =  "http://webservices.amazon.com/onca/xml?" + paramString + "&Signature=" + signature;
+		var amazonUrl =  "https://webservices.amazon.com/onca/xml?" + paramString + "&Signature=" + signature;
 
 		return amazonUrl;
 	}
@@ -81,7 +81,7 @@ $(document).ready(function() {
 		var signature = sha256(signingKey,PrivateKey);
 		    signature = encodeURIComponent(signature);
 
-		var amazonUrl =  "http://webservices.amazon.com/onca/xml?" + paramString + "&Signature=" + signature;
+		var amazonUrl =  "https://webservices.amazon.com/onca/xml?" + paramString + "&Signature=" + signature;
 
 		return amazonUrl;
 	}
