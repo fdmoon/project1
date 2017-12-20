@@ -16,3 +16,11 @@ The first a link to Amazon and the second a local retailer.
 * Kevin: UI/wireframing
 * Harrison: UI/general
 
+![Page-1](docs/choosr-page-1.png)
+
+![Page-2](docs/choosr-page-2.png)
+
+![Page-3](docs/choosr-page-3.png)
+
+![Page-4](docs/choosr-page-4.png)
+
